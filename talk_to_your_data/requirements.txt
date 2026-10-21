@@ -1,2 +1,0 @@
-streamlit>01.39,<2
-plotly>

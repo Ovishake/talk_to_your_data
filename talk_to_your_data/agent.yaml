@@ -1,0 +1,66 @@
+# Agent definition: natural language queries on the silver tables.
+# ${VAR} values come from environment variables (app.yaml or your shell).
+
+name: data-analyst
+version: 1.1.0
+description: Answers business questions on the silver tables with Genie, a chart and a summary.
+owner: avishemukherjee@dttrlabs.com
+
+model:
+  endpoint: system.ai.claude-sonnet-4-6
+  temperature: 0.1        # low = stable answers
+  max_tokens: 1024
+  timeout_s: 60
+  retries: 2              # retries when the output fails validation
+
+genie:
+  space_id: ${GENIE_SPACE_ID}
+  max_rows: 5000
+
+data:
+  catalog: samples # catalog name
+  schema: silver
+  tables:
+    - name: forecast_daily_calendar_metric
+      description: >
+        AccuWeather daily forecasts in metric units (°C, mm, km/h).
+        One row per location and calendar day.
+  glossary:
+    temperature: Degrees Celsius.
+    precipitation: Millimetres per day.
+    calendar day: Midnight to midnight, local time.
+
+
+guardrails:
+  blocked_sql_keywords: [DROP, DELETE, UPDATE, INSERT, MERGE, ALTER, TRUNCATE, GRANT]
+  hidden_columns: [email, phone, iban]   # removed before the model or the UI sees data
+
+output:
+  chart_types: [bar, line, scatter, pie, table]
+  summary_max_sentences: 3
+
+ui:
+  title: Ask the weather forecast
+  placeholder: "Example: average maximum temperature per day"
+  page_size: 100
+  examples:
+    - Average maximum temperature per day
+    - The 5 days with the most precipitation
+    - Minimum and maximum temperature per location
+
+cache:
+  ttl_s: 300
+
+observability:
+  mlflow_experiment: /Shared/nlq-app
+  log_level: INFO
+
+instructions: |
+  You are a data analyst for weather forecast data.
+  1. Call ask_genie one time with one clear data question.
+  2. Use the units from the glossary in your summary.
+  3. Select one chart type from the allowed list.
+  4. Use "line" for values over time. Use "bar" to compare locations.
+  5. Use only column names from the result.
+  6. Do not invent numbers. Use only numbers from the result.
+
