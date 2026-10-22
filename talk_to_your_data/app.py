@@ -1,5 +1,4 @@
 import logging
-import mlflow
 import streamlit as st
 from databricks.sdk import WorkspaceClient
 from nlq.agent import Deps, build_agent
@@ -15,9 +14,10 @@ def setup():
     cfg = load_config()
     logging.getLogger().setLevel(cfg.observability.log_level)
     if exp := cfg.observability.mlflow_experiment:
+        import mlflow
+        import mlflow.pydantic_ai
         mlflow.set_tracking_uri("databricks")
         mlflow.set_experiment(exp)
-        import mlflow.pydantic_ai
         mlflow.pydantic_ai.autolog()
     log.info("started agent=%s version=%s", cfg.name, cfg.version)
     return cfg, WorkspaceClient()
@@ -43,9 +43,11 @@ if q := st.session_state.get("q"):
         try:
             with st.spinner("Asking Genie..."):
                 ans, res = ask(q)
-        except Exception:
+        except Exception as exc:
             log.exception("query_failed")
             st.error("The query failed. Rephrase the question and try again.")
+            with st.expander("Error details"):
+                st.code(str(exc))
             st.stop()
         st.write(ans.summary)
         if res is None or res.df.empty:

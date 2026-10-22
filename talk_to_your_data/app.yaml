@@ -1,6 +1,6 @@
 command: ["streamlit", "run", "app.py"]
 env:
   - name: GENIE_SPACE_ID
-    valueFrom: genie-space
+    value: 01f1ce0aa18b1373901a867358836cfd
   - name: LLM_ENDPOINT
-    valueFrom: llm-endpoint
+    value: databricks-claude-haiku-5-5

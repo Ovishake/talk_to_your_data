@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 from pydantic import ValidationError
-from nlq.config import AgentConfig
+from nlq.config import AgentConfig, ModelCfg
 from nlq.genie import GenieClient
 from nlq.viz import ChartSpec, make_figure
 
@@ -23,7 +23,7 @@ def test_invalid_spec_falls_back_to_table(spec):
 
 def test_unresolved_env_var_rejected():
     with pytest.raises(ValidationError):
-        AgentConfig(name="a", llm_endpoint="${LLM}", genie_space_id="x", instructions="i")
+        ModelCfg(endpoint="${LLM}")
 
 def test_genie_parses_result():
     ws = MagicMock()
