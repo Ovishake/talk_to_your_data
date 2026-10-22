@@ -8,7 +8,6 @@ owner: avishemukherjee@dttrlabs.com
 
 model:
   endpoint: databricks-claude-haiku-5-5
-  temperature: 0.1        # low = stable answers
   max_tokens: 1024
   timeout_s: 60
   retries: 2              # retries when the output fails validation
@@ -18,8 +17,8 @@ genie:
   max_rows: 5000
 
 data:
-  catalog: samples # catalog name
-  schema: silver
+  catalog: samples
+  schema: accuweather
   tables:
     - name: forecast_daily_calendar_metric
       description: >

@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# uv
+.venv/
+
+# Tools
+.pytest_cache/
+.ruff_cache/
+
+# Databricks bundle state
+.databricks/
+
+# Local environment values
+.env

@@ -1,0 +1,9 @@
+databricks-sdk>=0.60
+pydantic>=2.8
+pydantic-ai-slim[openai]>=1.0
+openai>=1.54
+streamlit>=1.40
+plotly>=5.24
+pandas>=2.2
+pyyaml>=6.0
+mlflow[databricks]>=3.1
