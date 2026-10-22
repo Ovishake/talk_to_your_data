@@ -23,7 +23,7 @@ def build_agent(cfg: AgentConfig, ws: WorkspaceClient) -> Agent[Deps, Answer]:
         OpenAIChatModel(m.endpoint, provider=OpenAIProvider(openai_client=client)),
         deps_type=Deps, output_type=Answer, name=cfg.name,
         instructions=cfg.prompt(), retries=m.retries,
-        model_settings=ModelSettings(temperature=m.temperature, max_tokens=m.max_tokens, timeout=m.timeout_s))
+        model_settings=ModelSettings(**({"temperature": m.temperature} if m.temperature is not None else {}), max_tokens=m.max_tokens, timeout=m.timeout_s))
     kws = cfg.guardrails.blocked_sql_keywords
     blocked = re.compile(rf"\b({'|'.join(map(re.escape, kws))})\b", re.I) if kws else None
 
@@ -46,7 +46,7 @@ def build_agent(cfg: AgentConfig, ws: WorkspaceClient) -> Agent[Deps, Answer]:
         if out.spec.chart not in cfg.output.chart_types:
             raise ModelRetry(f"Use one chart type from: {cfg.output.chart_types}")
         cols = set(ctx.deps.result.df.columns)
-        if bad := {c for c in (out.spec.x, out.spec.y, out.spec.color) if c} - cols:
+        if cols and (bad := {c for c in (out.spec.x, out.spec.y, out.spec.color) if c} - cols):
             raise ModelRetry(f"Unknown columns {bad}. Use only: {sorted(cols)}")
         return out
 

@@ -9,7 +9,7 @@ ChartType = Literal["bar", "line", "scatter", "pie", "table"]
 
 class ModelCfg(BaseModel):
     endpoint: str = Field(pattern=NO_PLACEHOLDER)
-    temperature: float = Field(default=0.1, ge=0, le=1)
+    temperature: float | None = Field(default=None, ge=0, le=1)
     max_tokens: int = Field(default=1024, gt=0)
     timeout_s: float = Field(default=60, gt=0)
     retries: int = Field(default=2, ge=0, le=5)
