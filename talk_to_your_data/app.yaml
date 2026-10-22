@@ -1,0 +1,6 @@
+command: ["streamlit", "run", "app.py"]
+env:
+  - name: GENIE_SPACE_ID
+    valueFrom: genie-space
+  - name: LLM_ENDPOINT
+    valueFrom: llm-endpoint
