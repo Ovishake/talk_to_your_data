@@ -7,7 +7,7 @@ description: Answers business questions on the silver tables with Genie, a chart
 owner: avishemukherjee@dttrlabs.com
 
 model:
-  endpoint: system.ai.claude-sonnet-4-6
+  endpoint: databricks-claude-haiku-5-5
   temperature: 0.1        # low = stable answers
   max_tokens: 1024
   timeout_s: 60

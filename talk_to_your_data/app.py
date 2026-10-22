@@ -1,6 +1,5 @@
 import logging
 import mlflow
-import mlflow.pydantic_ai
 import streamlit as st
 from databricks.sdk import WorkspaceClient
 from nlq.agent import Deps, build_agent
@@ -18,6 +17,7 @@ def setup():
     if exp := cfg.observability.mlflow_experiment:
         mlflow.set_tracking_uri("databricks")
         mlflow.set_experiment(exp)
+        import mlflow.pydantic_ai
         mlflow.pydantic_ai.autolog()
     log.info("started agent=%s version=%s", cfg.name, cfg.version)
     return cfg, WorkspaceClient()

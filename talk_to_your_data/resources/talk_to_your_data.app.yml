@@ -1,0 +1,6 @@
+resources:
+  apps:
+    talk_to_your_data:
+      name: ttyd-${workspace.current_user.domain_friendly_name}
+      description: "Natural language query Streamlit app backed by Genie"
+      source_code_path: ..
