@@ -1,5 +1,6 @@
-# talk_to_your_data
+# talk_to_your_data 
 
+> A semantic layer for your data, ask in natural language and get answers and some visualizations with it.
 > Ask plain-English questions about your data — get an AI-written summary, an interactive chart, and the underlying SQL, all in one click.
 
 ![App screenshot](docs/screenshot.png)
