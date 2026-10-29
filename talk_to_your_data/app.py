@@ -1,13 +1,18 @@
 import logging
+
 import streamlit as st
 from databricks.sdk import WorkspaceClient
+
 from nlq.agent import Deps, build_agent
 from nlq.config import load_config
 from nlq.genie import GenieClient
 from nlq.viz import make_figure
 
-logging.basicConfig(format='{"t":"%(asctime)s","lvl":"%(levelname)s","log":"%(name)s","msg":"%(message)s"}')
+logging.basicConfig(
+    format='{"t":"%(asctime)s","lvl":"%(levelname)s","log":"%(name)s","msg":"%(message)s"}'
+)
 log = logging.getLogger("nlq.app")
+
 
 @st.cache_resource
 def setup():
@@ -16,18 +21,22 @@ def setup():
     if exp := cfg.observability.mlflow_experiment:
         import mlflow
         import mlflow.pydantic_ai
+
         mlflow.set_tracking_uri("databricks")
         mlflow.set_experiment(exp)
         mlflow.pydantic_ai.autolog()
     log.info("started agent=%s version=%s", cfg.name, cfg.version)
     return cfg, WorkspaceClient()
 
+
 cfg, ws = setup()
+
 
 @st.cache_data(ttl=cfg.cache.ttl_s, show_spinner=False)
 def ask(question: str):
     deps = Deps(GenieClient(ws, cfg.genie.space_id, cfg.genie.max_rows))
     return build_agent(cfg, ws).run_sync(question, deps=deps).output, deps.result
+
 
 st.set_page_config(page_title=cfg.ui.title, layout="wide")
 st.title(cfg.ui.title)
@@ -57,6 +66,6 @@ if q := st.session_state.get("q"):
             st.plotly_chart(fig)
         size = cfg.ui.page_size
         page = st.number_input("Page", 1, max(1, -(-len(res.df) // size)), 1)
-        st.dataframe(res.df.iloc[(page - 1) * size: page * size])
+        st.dataframe(res.df.iloc[(page - 1) * size : page * size])
         with st.expander("SQL"):
             st.code(res.sql or "", language="sql")

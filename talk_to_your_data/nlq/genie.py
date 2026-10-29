@@ -1,15 +1,18 @@
 import logging
 from dataclasses import dataclass
+
 import pandas as pd
 from databricks.sdk import WorkspaceClient
 
 log = logging.getLogger(__name__)
+
 
 @dataclass
 class GenieResult:
     sql: str | None
     text: str | None
     df: pd.DataFrame
+
 
 class GenieClient:
     def __init__(self, ws: WorkspaceClient, space_id: str, max_rows: int):
@@ -18,9 +21,13 @@ class GenieClient:
     def ask(self, question: str) -> GenieResult:
         try:
             msg = self.ws.genie.start_conversation_and_wait(self.space_id, question)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             log.warning("genie_failed question=%r error=%s", question, e)
-            return GenieResult(sql=None, text=f"Genie could not answer this question: {e}", df=pd.DataFrame())
+            return GenieResult(
+                sql=None,
+                text=f"Genie could not answer this question: {e}",
+                df=pd.DataFrame(),
+            )
         sql, text, df = None, None, pd.DataFrame()
         for att in msg.attachments or []:
             if att.text:
@@ -28,11 +35,16 @@ class GenieClient:
             if att.query:
                 sql = att.query.query
                 res = self.ws.genie.get_message_attachment_query_result(
-                    self.space_id, msg.conversation_id, msg.message_id, att.attachment_id)
+                    self.space_id,
+                    msg.conversation_id,
+                    msg.message_id,
+                    att.attachment_id,
+                )
                 if res.statement_response is not None:
                     df = to_frame(res.statement_response, self.max_rows)
         log.info("genie_answer rows=%d sql=%r", len(df), sql)
         return GenieResult(sql, text, df)
+
 
 def to_frame(stmt, max_rows: int) -> pd.DataFrame:
     if stmt is None or stmt.manifest is None:
