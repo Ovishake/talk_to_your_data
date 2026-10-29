@@ -8,10 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHONDONTWRITEBYTECODE: "1"
+      UV_DEFAULT_INDEX: "https://pypi.org/simple"
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - run: uv run pytest -q
+      - run: uv run --frozen pytest -q
 
   deploy:
     needs: test
